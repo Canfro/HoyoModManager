@@ -51,7 +51,6 @@ public class MainWindowViewModel : ViewModelBase
             if (value == _selectedMod) return;
             this.RaiseAndSetIfChanged(ref _selectedMod, value);
             ToggleMod(value);
-            UpdateMods();
         }
     }
     
@@ -130,6 +129,8 @@ public class MainWindowViewModel : ViewModelBase
                 Directory.CreateDirectory(characterPath);
             }
         }
+        
+        UpdateCharacters();
     }
 
     private static string GetGamePath(string game) => game switch
@@ -165,5 +166,36 @@ public class MainWindowViewModel : ViewModelBase
             File.Move(iniPath, newIniPath);
         }
         */
+        
+        UpdateMods();
+    }
+
+    public void RandomizeMods()
+    {
+        string gamePath = GetGamePath(SelectedGame);
+        
+        foreach (string character in Characters)
+        {
+            string characterPath = Path.Combine(gamePath, "HoyoModManager", character);
+
+            foreach (string modPath in Directory.GetDirectories(characterPath))
+            {
+                string modName = Path.GetFileName(modPath);
+                if (modName.StartsWith("DISABLED ")) continue;
+                string newModPath = Path.Combine(characterPath, "DISABLED " + modName);
+                Directory.Move(modPath, newModPath);
+            }
+            
+            string[] mods = Directory.GetDirectories(characterPath);
+            if (mods.Length == 0) continue;
+
+            Random random = new();
+            string randomModName = mods[random.Next(mods.Length)];
+            string randomModPath = Path.Combine(characterPath, randomModName);
+            string randomNewModPath = Path.Combine(characterPath, randomModName.Replace("DISABLED ", ""));
+            Directory.Move(randomModPath, randomNewModPath);
+        }
+        
+        UpdateMods();
     }
 }

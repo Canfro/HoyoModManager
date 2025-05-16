@@ -29,6 +29,11 @@
             <Button Command="{Binding CreateFolders}">
                 Create Folders
             </Button>
+            
+            <!-- Randomize Mods -->
+            <Button Command="{Binding RandomizeMods}">
+                Randomize Mods
+            </Button>
         </StackPanel>
         
         <!-- Middle Section -->
