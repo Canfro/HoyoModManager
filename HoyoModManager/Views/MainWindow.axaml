@@ -3,11 +3,13 @@
         xmlns:vm="using:HoyoModManager.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d"
         x:Class="HoyoModManager.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="HoyoModManager">
+        Title="HoyoModManager"
+        Width="900"
+        Height="600">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -15,6 +17,37 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
+    <DockPanel>
+        <!-- Top Panel -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+            <!-- Game Selector -->
+            <ComboBox ItemsSource="{Binding Games}"
+                      SelectedItem="{Binding SelectedGame}"
+                      Margin="5"/>
+            
+            <!-- Create Folders -->
+            <Button Command="{Binding CreateFolders}">
+                Create Folders
+            </Button>
+        </StackPanel>
+        
+        <!-- Middle Section -->
+        <Grid ColumnDefinitions="*, Auto, *">
+            <!-- Characters -->
+            <ListBox Grid.Column="0"
+                     ItemsSource="{Binding Characters}"
+                     SelectedItem="{Binding SelectedCharacter}"/>
+            
+            <!-- Splitter -->
+            <GridSplitter Grid.Column="1"
+                          Width="5"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"/>
+            
+            <!-- Mods -->
+            <ListView Grid.Column="2" 
+                      ItemsSource="{Binding Mods}"
+                      SelectedItem="{Binding SelectedMod}"/>
+        </Grid>
+    </DockPanel>
 </Window>
