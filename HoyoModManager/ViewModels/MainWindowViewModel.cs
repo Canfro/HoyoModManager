@@ -88,6 +88,11 @@ public partial class MainWindowViewModel : ViewModelBase
                 int modCount = Directory.GetDirectories(characterPath).Length;
                 Characters.Add($"{character} ({modCount.ToString()})");
             }
+
+            if (Characters.Count > 0)
+            {
+                SelectedCharacter = Characters[0];
+            }
         });
     }
 
@@ -181,7 +186,8 @@ public partial class MainWindowViewModel : ViewModelBase
         
         foreach (string character in Characters)
         {
-            string characterPath = Path.Combine(gamePath, "HoyoModManager", character);
+            string characterName = Regex.Replace(character, @"\s\(\d+\)$", "");
+            string characterPath = Path.Combine(gamePath, "HoyoModManager", characterName);
 
             foreach (string modPath in Directory.GetDirectories(characterPath))
             {
