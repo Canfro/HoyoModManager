@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
+        x:Name="Window"
         x:Class="HoyoModManager.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
@@ -16,10 +17,11 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
-
+    
     <DockPanel>
         <!-- Top Panel -->
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+        <StackPanel DockPanel.Dock="Top" 
+                    Orientation="Horizontal">
             <!-- Game Selector -->
             <ComboBox ItemsSource="{Binding Games}"
                       SelectedItem="{Binding SelectedGame}"
@@ -37,7 +39,7 @@
         </StackPanel>
         
         <!-- Middle Section -->
-        <Grid ColumnDefinitions="*, Auto, *">
+        <Grid ColumnDefinitions="*, 5, *">
             <!-- Characters -->
             <ListBox Grid.Column="0"
                      ItemsSource="{Binding Characters}"
@@ -45,7 +47,6 @@
             
             <!-- Splitter -->
             <GridSplitter Grid.Column="1"
-                          Width="5"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"/>
             

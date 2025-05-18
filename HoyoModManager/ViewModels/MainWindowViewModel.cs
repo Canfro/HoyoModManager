@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Net.Mime;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using Avalonia;
+using System.Text.RegularExpressions;
 using Avalonia.Extensions.Controls;
-using Avalonia.Media.TextFormatting;
 using Avalonia.Threading;
 using HoyoModManager.Models;
 using ReactiveUI;
@@ -14,11 +10,11 @@ using Path = System.IO.Path;
 
 namespace HoyoModManager.ViewModels;
 
-public class MainWindowViewModel : ViewModelBase
+public partial class MainWindowViewModel : ViewModelBase
 {
     public static ObservableCollection<string> Games => GamesData.Games;
-    public ObservableCollection<string> Characters { get; } = [];
-    public ObservableCollection<string> Mods { get; } = [];
+    public ObservableCollection<string> Characters { get; set; } = [];
+    public ObservableCollection<string> Mods { get; set; } = [];
     
     private string _selectedGame = "Genshin Impact";
     public string SelectedGame
@@ -37,7 +33,8 @@ public class MainWindowViewModel : ViewModelBase
         get => _selectedCharacter;
         set
         {
-            this.RaiseAndSetIfChanged(ref _selectedCharacter, value);
+            string selectedCharacterName = Regex.Replace(value, @"\s\(\d+\)$", "");
+            this.RaiseAndSetIfChanged(ref _selectedCharacter, selectedCharacterName);
             UpdateMods();
         }
     }
@@ -74,16 +71,23 @@ public class MainWindowViewModel : ViewModelBase
         {
             Characters.Clear();
 
-            ObservableCollection<string> newList = SelectedGame switch
+            ObservableCollection<string> newCharacters = SelectedGame switch
             {
                 "Genshin Impact" => GamesData.GenshinNames,
                 "Honkai: Star Rail" => GamesData.StarRailNames,
                 "Zenless Zone Zero" => GamesData.ZenlessNames,
                 _ => [],
             };
-
-            foreach (string name in newList)
-                Characters.Add(name);
+            
+            string gamePath = GetGamePath(SelectedGame);
+            string basePath = Path.Combine(gamePath, "HoyoModManager");
+            
+            foreach (string character in newCharacters)
+            {
+                string characterPath = Path.Combine(basePath, character);
+                int modCount = Directory.GetDirectories(characterPath).Length;
+                Characters.Add($"{character} ({modCount.ToString()})");
+            }
         });
     }
 
@@ -122,7 +126,8 @@ public class MainWindowViewModel : ViewModelBase
 
         foreach (string character in Characters)
         {
-            string characterPath = Path.Combine(basePath, character);
+            string characterName = Regex.Replace(character, @"\s\(\d+\)$", "");
+            string characterPath = Path.Combine(basePath, characterName);
 
             if (!Directory.Exists(characterPath))
             {

@@ -1,7 +1,4 @@
-using System;
 using Avalonia.Controls;
-using Avalonia.Extensions.Event;
-using HoyoModManager.ViewModels;
 
 namespace HoyoModManager.Views;
 
