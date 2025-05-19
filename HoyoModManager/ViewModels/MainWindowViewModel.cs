@@ -69,6 +69,20 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         Dispatcher.UIThread.Post(() =>
         {
+            string gamePath = GetGamePath(SelectedGame);
+            if (string.IsNullOrWhiteSpace(gamePath) || !Directory.Exists(gamePath))
+            {
+                ShowMessage("Error", "Make sure to set game path correctly in config.json");
+                return;
+            }
+            
+            string basePath = Path.Combine(gamePath, "HoyoModManager");
+            if (!Directory.Exists(basePath))
+            {
+                ShowMessage("Error", $"Directory {basePath} not found, make sure to create the necessary folders by pressing the 'Create Folders' button");
+                return;
+            }
+            
             Characters.Clear();
 
             ObservableCollection<string> newCharacters = SelectedGame switch
@@ -79,14 +93,14 @@ public partial class MainWindowViewModel : ViewModelBase
                 _ => [],
             };
             
-            string gamePath = GetGamePath(SelectedGame);
-            string basePath = Path.Combine(gamePath, "HoyoModManager");
-            
             foreach (string character in newCharacters)
             {
                 string characterPath = Path.Combine(basePath, character);
-                int modCount = Directory.GetDirectories(characterPath).Length;
-                Characters.Add($"{character} ({modCount.ToString()})");
+                int modCount = Directory.Exists(characterPath)
+                    ? Directory.GetDirectories(characterPath).Length
+                    : 0;
+                
+                Characters.Add($"{character} ({modCount})");
             }
 
             if (Characters.Count > 0)
@@ -99,7 +113,12 @@ public partial class MainWindowViewModel : ViewModelBase
     private void UpdateMods()
     {
         string gamePath = GetGamePath(SelectedGame);
-        if (string.IsNullOrWhiteSpace(gamePath) || !Directory.Exists(gamePath)) return;
+        if (string.IsNullOrWhiteSpace(gamePath) || !Directory.Exists(gamePath))
+        {
+            ShowMessage("Error", "Make sure to set game path correctly in config.json");
+            return;
+        }
+        
         string characterPath = Path.Combine(gamePath, "HoyoModManager", SelectedCharacter);
         
         Dispatcher.UIThread.Post(() =>
@@ -115,45 +134,54 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public void CreateFolders()
     {
-        if (string.IsNullOrWhiteSpace(GetGamePath(SelectedGame)) || !Directory.Exists(GetGamePath(SelectedGame)))
+        string gamePath = GetGamePath(SelectedGame);
+        if (string.IsNullOrWhiteSpace(gamePath) || !Directory.Exists(gamePath))
         {
-            ShowMessage("Error", "Make sure the path is properly set in config.json");
+            ShowMessage("Error", "Make sure to set game path correctly in config.json");
             return;
         }
-
-        string gamePath = GetGamePath(SelectedGame);
+        
         string basePath = Path.Combine(gamePath, "HoyoModManager");
-
-        if (!Directory.Exists(basePath))
+        Directory.CreateDirectory(basePath);
+        
+        ObservableCollection<string> newCharacters = SelectedGame switch
         {
-            Directory.CreateDirectory(basePath);
-        }
+            "Genshin Impact" => GamesData.GenshinNames,
+            "Honkai: Star Rail" => GamesData.StarRailNames,
+            "Zenless Zone Zero" => GamesData.ZenlessNames,
+            _ => [],
+        };
 
-        foreach (string character in Characters)
+        foreach (string character in newCharacters)
         {
             string characterName = Regex.Replace(character, @"\s\(\d+\)$", "");
             string characterPath = Path.Combine(basePath, characterName);
-
-            if (!Directory.Exists(characterPath))
-            {
-                Directory.CreateDirectory(characterPath);
-            }
+            Directory.CreateDirectory(characterPath);
         }
         
         UpdateCharacters();
     }
 
-    private static string GetGamePath(string game) => game switch
+    private static string GetGamePath(string game)
     {
-        "Genshin Impact" => Config.Current.Paths["GenshinPath"],
-        "Honkai: Star Rail" => Config.Current.Paths["StarRailPath"],
-        "Zenless Zone Zero" => Config.Current.Paths["ZenlessPath"],
-        _ => throw new ArgumentOutOfRangeException(),
-    };
+        return game switch
+        {
+            "Genshin Impact" => Config.Current.Paths["GenshinPath"],
+            "Honkai: Star Rail" => Config.Current.Paths["StarRailPath"],
+            "Zenless Zone Zero" => Config.Current.Paths["ZenlessPath"],
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+    }
     
     private void ToggleMod(string modName)
     {
         string gamePath = GetGamePath(SelectedGame);
+        if (string.IsNullOrWhiteSpace(gamePath) || !Directory.Exists(gamePath))
+        {
+            ShowMessage("Error", "Make sure to set game path correctly in config.json");
+            return;
+        }
+        
         string characterPath = Path.Combine(gamePath, "HoyoModManager", SelectedCharacter);
         string modPath = Path.Combine(characterPath, modName);
 
@@ -183,11 +211,23 @@ public partial class MainWindowViewModel : ViewModelBase
     public void RandomizeMods()
     {
         string gamePath = GetGamePath(SelectedGame);
+        if (string.IsNullOrWhiteSpace(gamePath) || !Directory.Exists(gamePath))
+        {
+            ShowMessage("Error", "Make sure to set game path correctly in config.json");
+            return;
+        }
+        
+        string basePath = Path.Combine(gamePath, "HoyoModManager");
+        if (!Directory.Exists(basePath))
+        {
+            ShowMessage("Error", $"Directory {basePath} not found, make sure to create the necessary folders by pressing the 'Create Folders' button");
+            return; 
+        }
         
         foreach (string character in Characters)
         {
             string characterName = Regex.Replace(character, @"\s\(\d+\)$", "");
-            string characterPath = Path.Combine(gamePath, "HoyoModManager", characterName);
+            string characterPath = Path.Combine(basePath, characterName);
 
             foreach (string modPath in Directory.GetDirectories(characterPath))
             {
