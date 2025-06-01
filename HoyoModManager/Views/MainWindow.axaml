@@ -28,12 +28,14 @@
                       Margin="5"/>
             
             <!-- Create Folders -->
-            <Button Command="{Binding CreateFolders}">
+            <Button Command="{Binding CreateFolders}"
+                    Margin="5">
                 Create Folders
             </Button>
             
             <!-- Randomize Mods -->
-            <Button Command="{Binding RandomizeMods}">
+            <Button Command="{Binding RandomizeMods}"
+                    Margin="5">
                 Randomize Mods
             </Button>
         </StackPanel>
@@ -43,7 +45,7 @@
             <!-- Characters -->
             <ListBox Grid.Column="0"
                      ItemsSource="{Binding Characters}"
-                     SelectedItem="{Binding SelectedCharacter}"/>
+                     SelectedItem="{Binding SelectedCharacter, Mode=TwoWay}"/>
             
             <!-- Splitter -->
             <GridSplitter Grid.Column="1"
