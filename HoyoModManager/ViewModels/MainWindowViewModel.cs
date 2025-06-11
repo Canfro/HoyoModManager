@@ -229,6 +229,12 @@ public partial class MainWindowViewModel : ViewModelBase
             string characterName = Regex.Replace(character, @"\s\(\d+\)$", "");
             string characterPath = Path.Combine(basePath, characterName);
 
+            if (!Directory.Exists(characterPath))
+            {
+                ShowMessage("Error", $"Directory {characterPath} not found, make sure to create the necessary folders by pressing the 'Create Folders' button");
+                return;
+            }
+
             foreach (string modPath in Directory.GetDirectories(characterPath))
             {
                 string modName = Path.GetFileName(modPath);
