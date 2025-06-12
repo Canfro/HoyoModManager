@@ -38,6 +38,12 @@
                     Margin="5">
                 Randomize Mods
             </Button>
+            
+            <!-- Make Toggles Permanent -->
+            <Button Command="{Binding PermanentToggles}"
+                    Margin="5">
+                Make Toggles Permanent
+            </Button>
         </StackPanel>
         
         <!-- Middle Section -->

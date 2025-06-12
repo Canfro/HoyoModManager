@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
-using Avalonia.Extensions.Controls;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using HoyoModManager.Models;
 using ReactiveUI;
+using MessageBox = HoyoModManager.Views.MessageBox;
 using Path = System.IO.Path;
 
 namespace HoyoModManager.ViewModels;
@@ -50,26 +53,28 @@ public partial class MainWindowViewModel : ViewModelBase
             ToggleMod(value);
         }
     }
+
+    private readonly Window _window;
     
-    public MainWindowViewModel()
+    public MainWindowViewModel(Window window)
     {
+        _window = window;
         Config.Load();
         UpdateCharacters();
     }
 
-    private static void ShowMessage(string title, string message)
+    private void ShowMessage(string title, string message)
     {
-        Dispatcher.UIThread.Post(() =>
-        {
-            MessageBox.Show(title, message, MessageBoxButtons.Ok);
-        });
+        MessageBox popup = new(title, message);
+        popup.ShowDialog(_window);
     }
     
     private void UpdateCharacters()
     {
         Dispatcher.UIThread.Post(() =>
         {
-            string modsPath = Path.Combine(GetGamePath(SelectedGame), "Mods");
+            string gamePath = GetGamePath(SelectedGame);
+            string modsPath = Path.Combine(gamePath, "Mods");
             if (string.IsNullOrWhiteSpace(modsPath) || !Directory.Exists(modsPath))
             {
                 ShowMessage("Error", "Make sure to set game path correctly in config.json");
@@ -112,7 +117,8 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private void UpdateMods()
     {
-        string modsPath = Path.Combine(GetGamePath(SelectedGame), "Mods");
+        string gamePath = GetGamePath(SelectedGame);
+        string modsPath = Path.Combine(gamePath, "Mods");
         if (string.IsNullOrWhiteSpace(modsPath) || !Directory.Exists(modsPath))
         {
             ShowMessage("Error", "Make sure to set game path correctly in config.json");
@@ -134,7 +140,8 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public void CreateFolders()
     {
-        string modsPath = Path.Combine(GetGamePath(SelectedGame), "Mods");
+        string gamePath = GetGamePath(SelectedGame);
+        string modsPath = Path.Combine(gamePath, "Mods");
         if (string.IsNullOrWhiteSpace(modsPath) || !Directory.Exists(modsPath))
         {
             ShowMessage("Error", "Make sure to set game path correctly in config.json");
@@ -175,7 +182,8 @@ public partial class MainWindowViewModel : ViewModelBase
     
     private void ToggleMod(string modName)
     {
-        string modsPath = Path.Combine(GetGamePath(SelectedGame), "Mods");
+        string gamePath = GetGamePath(SelectedGame);
+        string modsPath = Path.Combine(gamePath, "Mods");
         if (string.IsNullOrWhiteSpace(modsPath) || !Directory.Exists(modsPath))
         {
             ShowMessage("Error", "Make sure to set game path correctly in config.json");
@@ -210,7 +218,8 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public void RandomizeMods()
     {
-        string modsPath = Path.Combine(GetGamePath(SelectedGame), "Mods");
+        string gamePath = GetGamePath(SelectedGame);
+        string modsPath = Path.Combine(gamePath, "Mods");
         if (string.IsNullOrWhiteSpace(modsPath) || !Directory.Exists(modsPath))
         {
             ShowMessage("Error", "Make sure to set game path correctly in config.json");
@@ -258,18 +267,21 @@ public partial class MainWindowViewModel : ViewModelBase
     
     public void PermanentToggles()
     {
-        string basePath = Directory.GetCurrentDirectory();
-        string userIniPath = Path.Combine(basePath, "d3dx_user.ini");
+        string gamePath = GetGamePath(SelectedGame);
+        string userIniPath = Path.Combine(gamePath, "d3dx_user.ini");
 
         if (!File.Exists(userIniPath))
         {
-            Console.WriteLine("'d3dx_user.ini' file not found. Make sure to put this script on the same directory as 'd3dx_user.ini'.");
+            ShowMessage("Error", "'d3dx_user.ini' file not found.");
             return;
         }
         
         string[] lines = File.ReadAllLines(userIniPath);
         Regex regex = new(@"^\$\\(.+?\.ini)\\([^\s=]+)\s*=\s*(.+)$");
-
+        
+        List<string> notFoundIniPaths = [];
+        List<string> notFoundVariables = [];
+        
         foreach (string line in lines)
         {
             Match match = regex.Match(line.Trim());
@@ -278,13 +290,18 @@ public partial class MainWindowViewModel : ViewModelBase
             string iniRelativePath = match.Groups[1].Value.Replace("\\", Path.DirectorySeparatorChar.ToString());
             string variable = match.Groups[2].Value;
             string value = match.Groups[3].Value;
-            string? iniPath = ResolveActualPath(basePath, iniRelativePath);
+            string? iniPath = ResolveActualPath(gamePath, iniRelativePath);
             
             Regex regexLine = new($@"^\s*global\s+persist\s+\${Regex.Escape(variable)}\b", RegexOptions.IgnoreCase);
-
-            if (iniPath == null || !File.Exists(iniPath))
+            
+            if (iniPath == null)
             {
-                Console.WriteLine($"[Warning] File not found: {iniPath}");
+                notFoundIniPaths.Add($"Path could not be resolved for: {iniRelativePath}");
+                continue;
+            }
+            if (!File.Exists(iniPath))
+            {
+                notFoundIniPaths.Add($"File not found: {iniPath}");
                 continue;
             }
             
@@ -307,13 +324,15 @@ public partial class MainWindowViewModel : ViewModelBase
             
             if (!found)
             {
-                Console.WriteLine($"[Warning] Variable '${variable}' not found in: {iniPath}");
+                notFoundVariables.Add($"Variable {variable} not found in {iniPath}");
             }
 
             File.WriteAllLines(iniPath, newLines);
         }
-
-        Console.WriteLine("Toggles updated!");
+        
+        if (notFoundIniPaths.Count > 0) ShowMessage("Archivos no encontrados", string.Join("\n", notFoundIniPaths));
+        if (notFoundVariables.Count > 0) ShowMessage("Variables no encontradas", string.Join("\n", notFoundVariables));
+        ShowMessage("Success", "Toggles updated!");
     }
     
     private static string? ResolveActualPath(string basePath, string lowerCasePath)
@@ -323,15 +342,13 @@ public partial class MainWindowViewModel : ViewModelBase
 
         foreach (string part in parts)
         {
-            if (!Directory.Exists(currentPath))
-                return null;
+            if (!Directory.Exists(currentPath)) return null;
 
             string? match = Directory
                 .EnumerateFileSystemEntries(currentPath)
                 .FirstOrDefault(entry => string.Equals(Path.GetFileName(entry), part, StringComparison.OrdinalIgnoreCase));
 
-            if (match == null)
-                return null;
+            if (match == null) return null;
 
             currentPath = match;
         }
