@@ -69,14 +69,14 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         Dispatcher.UIThread.Post(() =>
         {
-            string gamePath = GetGamePath(SelectedGame);
-            if (string.IsNullOrWhiteSpace(gamePath) || !Directory.Exists(gamePath))
+            string modsPath = Path.Combine(GetGamePath(SelectedGame), "Mods");
+            if (string.IsNullOrWhiteSpace(modsPath) || !Directory.Exists(modsPath))
             {
                 ShowMessage("Error", "Make sure to set game path correctly in config.json");
                 return;
             }
             
-            string basePath = Path.Combine(gamePath, "HoyoModManager");
+            string basePath = Path.Combine(modsPath, "HoyoModManager");
             if (!Directory.Exists(basePath))
             {
                 ShowMessage("Error", $"Directory {basePath} not found, make sure to create the necessary folders by pressing the 'Create Folders' button");
@@ -112,14 +112,14 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private void UpdateMods()
     {
-        string gamePath = GetGamePath(SelectedGame);
-        if (string.IsNullOrWhiteSpace(gamePath) || !Directory.Exists(gamePath))
+        string modsPath = Path.Combine(GetGamePath(SelectedGame), "Mods");
+        if (string.IsNullOrWhiteSpace(modsPath) || !Directory.Exists(modsPath))
         {
             ShowMessage("Error", "Make sure to set game path correctly in config.json");
             return;
         }
         
-        string characterPath = Path.Combine(gamePath, "HoyoModManager", SelectedCharacter);
+        string characterPath = Path.Combine(modsPath, "HoyoModManager", SelectedCharacter);
         
         Dispatcher.UIThread.Post(() =>
         {
@@ -134,14 +134,14 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public void CreateFolders()
     {
-        string gamePath = GetGamePath(SelectedGame);
-        if (string.IsNullOrWhiteSpace(gamePath) || !Directory.Exists(gamePath))
+        string modsPath = Path.Combine(GetGamePath(SelectedGame), "Mods");
+        if (string.IsNullOrWhiteSpace(modsPath) || !Directory.Exists(modsPath))
         {
             ShowMessage("Error", "Make sure to set game path correctly in config.json");
             return;
         }
         
-        string basePath = Path.Combine(gamePath, "HoyoModManager");
+        string basePath = Path.Combine(modsPath, "HoyoModManager");
         Directory.CreateDirectory(basePath);
         
         ObservableCollection<string> newCharacters = SelectedGame switch
@@ -166,23 +166,23 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return game switch
         {
-            "Genshin Impact" => Config.Current.Paths["GenshinPath"],
-            "Honkai: Star Rail" => Config.Current.Paths["StarRailPath"],
-            "Zenless Zone Zero" => Config.Current.Paths["ZenlessPath"],
+            "Genshin Impact" => Config.Current.Paths["PathGIMI"],
+            "Honkai: Star Rail" => Config.Current.Paths["PathSRMI"],
+            "Zenless Zone Zero" => Config.Current.Paths["PathZZMI"],
             _ => throw new ArgumentOutOfRangeException(),
         };
     }
     
     private void ToggleMod(string modName)
     {
-        string gamePath = GetGamePath(SelectedGame);
-        if (string.IsNullOrWhiteSpace(gamePath) || !Directory.Exists(gamePath))
+        string modsPath = Path.Combine(GetGamePath(SelectedGame), "Mods");
+        if (string.IsNullOrWhiteSpace(modsPath) || !Directory.Exists(modsPath))
         {
             ShowMessage("Error", "Make sure to set game path correctly in config.json");
             return;
         }
         
-        string characterPath = Path.Combine(gamePath, "HoyoModManager", SelectedCharacter);
+        string characterPath = Path.Combine(modsPath, "HoyoModManager", SelectedCharacter);
         string modPath = Path.Combine(characterPath, modName);
 
         string newModPath = modName.StartsWith("DISABLED ")
@@ -210,14 +210,14 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public void RandomizeMods()
     {
-        string gamePath = GetGamePath(SelectedGame);
-        if (string.IsNullOrWhiteSpace(gamePath) || !Directory.Exists(gamePath))
+        string modsPath = Path.Combine(GetGamePath(SelectedGame), "Mods");
+        if (string.IsNullOrWhiteSpace(modsPath) || !Directory.Exists(modsPath))
         {
             ShowMessage("Error", "Make sure to set game path correctly in config.json");
             return;
         }
         
-        string basePath = Path.Combine(gamePath, "HoyoModManager");
+        string basePath = Path.Combine(modsPath, "HoyoModManager");
         if (!Directory.Exists(basePath))
         {
             ShowMessage("Error", $"Directory {basePath} not found, make sure to create the necessary folders by pressing the 'Create Folders' button");
@@ -254,5 +254,88 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         
         UpdateMods();
+    }
+    
+    public void PermanentToggles()
+    {
+        string basePath = Directory.GetCurrentDirectory();
+        string userIniPath = Path.Combine(basePath, "d3dx_user.ini");
+
+        if (!File.Exists(userIniPath))
+        {
+            Console.WriteLine("'d3dx_user.ini' file not found. Make sure to put this script on the same directory as 'd3dx_user.ini'.");
+            return;
+        }
+        
+        string[] lines = File.ReadAllLines(userIniPath);
+        Regex regex = new(@"^\$\\(.+?\.ini)\\([^\s=]+)\s*=\s*(.+)$");
+
+        foreach (string line in lines)
+        {
+            Match match = regex.Match(line.Trim());
+            if (!match.Success) continue;
+            
+            string iniRelativePath = match.Groups[1].Value.Replace("\\", Path.DirectorySeparatorChar.ToString());
+            string variable = match.Groups[2].Value;
+            string value = match.Groups[3].Value;
+            string? iniPath = ResolveActualPath(basePath, iniRelativePath);
+            
+            Regex regexLine = new($@"^\s*global\s+persist\s+\${Regex.Escape(variable)}\b", RegexOptions.IgnoreCase);
+
+            if (iniPath == null || !File.Exists(iniPath))
+            {
+                Console.WriteLine($"[Warning] File not found: {iniPath}");
+                continue;
+            }
+            
+            string[] iniLines = File.ReadAllLines(iniPath);
+            List<string> newLines = [];
+            bool found = false;
+            
+            foreach (string iniLine in iniLines)
+            {
+                if (regexLine.Match(iniLine).Success)
+                {
+                    newLines.Add($"global persist ${variable} = {value}");
+                    found = true;
+                }
+                else
+                {
+                    newLines.Add(iniLine);
+                }
+            }
+            
+            if (!found)
+            {
+                Console.WriteLine($"[Warning] Variable '${variable}' not found in: {iniPath}");
+            }
+
+            File.WriteAllLines(iniPath, newLines);
+        }
+
+        Console.WriteLine("Toggles updated!");
+    }
+    
+    private static string? ResolveActualPath(string basePath, string lowerCasePath)
+    {
+        string[] parts = lowerCasePath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        string currentPath = basePath;
+
+        foreach (string part in parts)
+        {
+            if (!Directory.Exists(currentPath))
+                return null;
+
+            string? match = Directory
+                .EnumerateFileSystemEntries(currentPath)
+                .FirstOrDefault(entry => string.Equals(Path.GetFileName(entry), part, StringComparison.OrdinalIgnoreCase));
+
+            if (match == null)
+                return null;
+
+            currentPath = match;
+        }
+
+        return currentPath;
     }
 }

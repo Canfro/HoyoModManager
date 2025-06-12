@@ -16,9 +16,9 @@ public class Config
     [JsonConstructor]
     private Config()
     {
-        Paths.Add("GenshinPath", "");
-        Paths.Add("StarRailPath", "");
-        Paths.Add("ZenlessPath", "");
+        Paths.Add("PathGIMI", "");
+        Paths.Add("PathSRMI", "");
+        Paths.Add("PathZZMI", "");
     }
         
     public static void Load()
