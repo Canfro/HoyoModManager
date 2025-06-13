@@ -12,10 +12,5 @@ public partial class MessageBox : Window
         this.FindControl<TextBlock>("Message").Text = message;
         DataContext = this;
     }
-    
-    private void Close_Click(object? sender, RoutedEventArgs e)
-    {
-        Close();
-    }
 }
 

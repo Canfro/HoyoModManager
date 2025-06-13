@@ -2,19 +2,20 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="100"
+        mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="300"
         x:Class="HoyoModManager.Views.MessageBox"
         CanResize="False"
-        WindowStartupLocation="CenterOwner">
+        WindowStartupLocation="CenterOwner"
+        MaxWidth="450"
+        MaxHeight="300"
+        SizeToContent="WidthAndHeight">
     
-    <StackPanel Margin="10" Spacing="10">
-        <ScrollViewer Height="200">
-            <TextBlock Name="Message" TextWrapping="Wrap" />
+    <StackPanel Margin="16" Spacing="12">
+        <ScrollViewer MaxHeight="200"
+                      VerticalScrollBarVisibility="Auto">
+            <TextBlock Name="Message"
+                       TextWrapping="Wrap"
+                       MaxWidth="420"/>
         </ScrollViewer>
-
-        <Button Content="Close"
-                HorizontalAlignment="Center"
-                Width="80"
-                Click="Close_Click"/>
     </StackPanel>
 </Window>

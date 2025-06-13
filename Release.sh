@@ -31,7 +31,7 @@ if [ "${#ZIPS[@]}" -eq 0 ]; then
 fi
 
 # Crear release con los .zip
-gh release create "$VERSION" "${ZIPS[@]}" --title "Versión $VERSION" --notes "$MESSAGE"
+gh release create "$VERSION" "${ZIPS[@]}" --title "$VERSION" --notes "$MESSAGE"
 
 # Eliminar los .zip del disco
 for ZIP in "${ZIPS[@]}"; do
