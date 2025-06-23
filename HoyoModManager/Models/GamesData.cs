@@ -22,7 +22,7 @@ public static class GamesData
         "Sigewinne", "Skirk", "Sucrose", "Tartaglia", "Thoma", "Tighnari", "Varesa", "Venti", "Wanderer", "Wriothesley", "Xiangling", 
         "Xianyun", "Xiao", "Xilonen", "Xingqiu", "Xinyan", "Yae Miko", "Yanfei", "Yaoyao", "Yelan", "Yoimiya", "Yumemizuki Mizuki", 
         "Yun Jin", "Zhongli", "Dahlia", "Seth",
-
+        "Other mods",
     ];
 
     public static ObservableCollection<string> StarRailNames { get; } =
@@ -34,6 +34,7 @@ public static class GamesData
         "Misha", "Moze", "Mydei", "Natasha", "Pela", "Phainon", "Qingque", "Rappa", "Robin", "Ruan Mei", "Saber", "Sampo", "Seele", 
         "Serval", "Silver Wolf", "Sparkle", "Stelle", "Sunday", "Sushang", "The Herta", "Tingyun", "Topaz and Numby", "Tribbie", 
         "Welt", "Xueyi", "Yanqing", "Yukong", "Yunli",
+        "Other mods",
     ];
     
     public static ObservableCollection<string> ZenlessNames { get; } =
@@ -41,6 +42,6 @@ public static class GamesData
         "Anby", "Anby Soldier 0", "Anton", "Astra Yao", "Ben", "Billy", "Burnice", "Caesar", "Corin", "Ellen", "Evelyn", "Grace", 
         "Harumasa", "Hugo", "Jane Doe", "Koleda", "Lighter", "Lucy", "Lycaon", "Miyabi", "Nicole", "Nekomata", "Piper", "Pulchra", 
         "Qingyi", "Rina", "Seth", "Soldier 11", "Soukaku", "Trigger", "Vivian", "Yanagi", "Zhu Yuan",
-
+        "Other mods",
     ];
 }

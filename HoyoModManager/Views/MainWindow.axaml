@@ -48,10 +48,10 @@
         
         <!-- Middle Section -->
         <Grid ColumnDefinitions="*, 5, *">
-            <!-- Characters -->
+            <!-- Mod Directories -->
             <ListBox Grid.Column="0"
-                     ItemsSource="{Binding Characters}"
-                     SelectedItem="{Binding SelectedCharacter, Mode=TwoWay}"/>
+                     ItemsSource="{Binding ModDirs}"
+                     SelectedItem="{Binding SelectedModDir, Mode=TwoWay}"/>
             
             <!-- Splitter -->
             <GridSplitter Grid.Column="1"

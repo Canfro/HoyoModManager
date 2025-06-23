@@ -16,7 +16,7 @@ namespace HoyoModManager.ViewModels;
 public partial class MainWindowViewModel : ViewModelBase
 {
     public static ObservableCollection<string> Games => GamesData.Games;
-    public ObservableCollection<string> Characters { get; set; } = [];
+    public ObservableCollection<string> ModDirs { get; set; } = [];
     public ObservableCollection<string> Mods { get; set; } = [];
     
     private string _selectedGame = "Genshin Impact";
@@ -30,14 +30,14 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
     
-    private string _selectedCharacter;
-    public string SelectedCharacter
+    private string _selectedModDir;
+    public string SelectedModDir
     {
-        get => _selectedCharacter;
+        get => _selectedModDir;
         set
         {
-            string selectedCharacterName = Regex.Replace(value, @"\s\(\d+\)$", "");
-            this.RaiseAndSetIfChanged(ref _selectedCharacter, selectedCharacterName);
+            string selectedModDirName = Regex.Replace(value, @"\s\(\d+\)$", "");
+            this.RaiseAndSetIfChanged(ref _selectedModDir, selectedModDirName);
             UpdateMods();
         }
     }
@@ -88,9 +88,9 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
             
-            Characters.Clear();
+            ModDirs.Clear();
 
-            ObservableCollection<string> newCharacters = SelectedGame switch
+            ObservableCollection<string> newModDirs = SelectedGame switch
             {
                 "Genshin Impact" => GamesData.GenshinNames,
                 "Honkai: Star Rail" => GamesData.StarRailNames,
@@ -98,19 +98,19 @@ public partial class MainWindowViewModel : ViewModelBase
                 _ => [],
             };
             
-            foreach (string character in newCharacters)
+            foreach (string modDir in newModDirs)
             {
-                string characterPath = Path.Combine(basePath, character);
-                int modCount = Directory.Exists(characterPath)
-                    ? Directory.GetDirectories(characterPath).Length
+                string modDirPath = Path.Combine(basePath, modDir);
+                int modCount = Directory.Exists(modDirPath)
+                    ? Directory.GetDirectories(modDirPath).Length
                     : 0;
                 
-                Characters.Add($"{character} ({modCount})");
+                ModDirs.Add($"{modDir} ({modCount})");
             }
 
-            if (Characters.Count > 0)
+            if (ModDirs.Count > 0)
             {
-                SelectedCharacter = Characters[0];
+                SelectedModDir = ModDirs[0];
             }
         });
     }
@@ -125,13 +125,13 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
         
-        string characterPath = Path.Combine(modsPath, "HoyoModManager", SelectedCharacter);
+        string modDirPath = Path.Combine(modsPath, "HoyoModManager", SelectedModDir);
         
         Dispatcher.UIThread.Post(() =>
         {
             Mods.Clear();
         
-            foreach (string dir in Directory.GetDirectories(characterPath))
+            foreach (string dir in Directory.GetDirectories(modDirPath))
             {
                 Mods.Add(Path.GetFileNameWithoutExtension(dir));
             }
@@ -151,7 +151,7 @@ public partial class MainWindowViewModel : ViewModelBase
         string basePath = Path.Combine(modsPath, "HoyoModManager");
         Directory.CreateDirectory(basePath);
         
-        ObservableCollection<string> newCharacters = SelectedGame switch
+        ObservableCollection<string> newModDirs = SelectedGame switch
         {
             "Genshin Impact" => GamesData.GenshinNames,
             "Honkai: Star Rail" => GamesData.StarRailNames,
@@ -159,11 +159,11 @@ public partial class MainWindowViewModel : ViewModelBase
             _ => [],
         };
 
-        foreach (string character in newCharacters)
+        foreach (string modDir in newModDirs)
         {
-            string characterName = Regex.Replace(character, @"\s\(\d+\)$", "");
-            string characterPath = Path.Combine(basePath, characterName);
-            Directory.CreateDirectory(characterPath);
+            string modDirName = Regex.Replace(modDir, @"\s\(\d+\)$", "");
+            string modDirPath = Path.Combine(basePath, modDirName);
+            Directory.CreateDirectory(modDirPath);
         }
         
         UpdateCharacters();
@@ -190,29 +190,14 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
         
-        string characterPath = Path.Combine(modsPath, "HoyoModManager", SelectedCharacter);
-        string modPath = Path.Combine(characterPath, modName);
+        string modDirPath = Path.Combine(modsPath, "HoyoModManager", SelectedModDir);
+        string modPath = Path.Combine(modDirPath, modName);
 
         string newModPath = modName.StartsWith("DISABLED ")
-            ? Path.Combine(characterPath, modName.Replace("DISABLED ", ""))
-            : Path.Combine(characterPath, "DISABLED " + modName);
+            ? Path.Combine(modDirPath, modName.Replace("DISABLED ", ""))
+            : Path.Combine(modDirPath, "DISABLED " + modName);
 
         Directory.Move(modPath, newModPath);
-
-        /*
-        foreach (string iniPath in Directory.GetFiles(newModPath, "*.ini", SearchOption.AllDirectories))
-        {
-            string iniName = Path.GetFileName(iniPath);
-            string iniDir = Path.GetDirectoryName(iniPath)!;
-            
-            string newIniPath = iniName.StartsWith("DISABLED_") 
-                ? Path.Combine(iniDir, iniName.Replace("DISABLED_", ""))
-                : Path.Combine(iniDir, "DISABLED_" + iniName);
-            
-            File.Move(iniPath, newIniPath);
-        }
-        */
-        
         UpdateMods();
     }
 
@@ -233,32 +218,32 @@ public partial class MainWindowViewModel : ViewModelBase
             return; 
         }
         
-        foreach (string character in Characters)
+        foreach (string modDir in ModDirs)
         {
-            string characterName = Regex.Replace(character, @"\s\(\d+\)$", "");
-            string characterPath = Path.Combine(basePath, characterName);
+            string modDirName = Regex.Replace(modDir, @"\s\(\d+\)$", "");
+            string modDirPath = Path.Combine(basePath, modDirName);
 
-            if (!Directory.Exists(characterPath))
+            if (!Directory.Exists(modDirPath))
             {
-                ShowMessage("Error", $"Directory {characterPath} not found, make sure to create the necessary folders by pressing the 'Create Folders' button");
+                ShowMessage("Error", $"Directory {modDirPath} not found, make sure to create the necessary folders by pressing the 'Create Folders' button");
                 return;
             }
 
-            foreach (string modPath in Directory.GetDirectories(characterPath))
+            foreach (string modPath in Directory.GetDirectories(modDirPath))
             {
                 string modName = Path.GetFileName(modPath);
                 if (modName.StartsWith("DISABLED ")) continue;
-                string newModPath = Path.Combine(characterPath, "DISABLED " + modName);
+                string newModPath = Path.Combine(modDirPath, "DISABLED " + modName);
                 Directory.Move(modPath, newModPath);
             }
             
-            string[] mods = Directory.GetDirectories(characterPath);
+            string[] mods = Directory.GetDirectories(modDirPath);
             if (mods.Length == 0) continue;
 
             Random random = new();
             string randomModName = mods[random.Next(mods.Length)];
-            string randomModPath = Path.Combine(characterPath, randomModName);
-            string randomNewModPath = Path.Combine(characterPath, randomModName.Replace("DISABLED ", ""));
+            string randomModPath = Path.Combine(modDirPath, randomModName);
+            string randomNewModPath = Path.Combine(modDirPath, randomModName.Replace("DISABLED ", ""));
             Directory.Move(randomModPath, randomNewModPath);
         }
         
@@ -268,6 +253,8 @@ public partial class MainWindowViewModel : ViewModelBase
     public void PermanentToggles()
     {
         string gamePath = GetGamePath(SelectedGame);
+        string modsPath = Path.Combine(gamePath, "Mods");
+        string basePath =  Path.Combine(modsPath, "HoyoModManager");
         string userIniPath = Path.Combine(gamePath, "d3dx_user.ini");
 
         if (!File.Exists(userIniPath))
@@ -276,13 +263,13 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
         
-        string[] lines = File.ReadAllLines(userIniPath);
-        Regex regex = new(@"^\$\\(.+?\.ini)\\([^\s=]+)\s*=\s*(.+)$");
+        string[] userIniLines = File.ReadAllLines(userIniPath);
+        Regex regex = new(@"^\$\\(.+?)\\([^\s=?\\]+)\s*=\s*(.+)$");
         
         List<string> notFoundIniPaths = [];
         List<string> notFoundVariables = [];
         
-        foreach (string line in lines)
+        foreach (string line in userIniLines)
         {
             Match match = regex.Match(line.Trim());
             if (!match.Success) continue;
@@ -290,20 +277,47 @@ public partial class MainWindowViewModel : ViewModelBase
             string iniRelativePath = match.Groups[1].Value.Replace("\\", Path.DirectorySeparatorChar.ToString());
             string variable = match.Groups[2].Value;
             string value = match.Groups[3].Value;
-            string? iniPath = ResolveActualPath(gamePath, iniRelativePath);
+            string iniPath = ResolveActualPath(gamePath, iniRelativePath);
             
-            Regex regexLine = new($@"^\s*global\s+persist\s+\${Regex.Escape(variable)}\b", RegexOptions.IgnoreCase);
-            
-            if (iniPath == null)
-            {
-                notFoundIniPaths.Add($"Path could not be resolved for: {iniRelativePath}");
-                continue;
-            }
             if (!File.Exists(iniPath))
             {
-                notFoundIniPaths.Add($"File not found: {iniPath}");
-                continue;
+                bool namespaceFound = false;
+                foreach (string modDir in ModDirs)
+                {
+                    if (namespaceFound) break;
+                    
+                    string modDirName = Regex.Replace(modDir, @"\s\(\d+\)$", "");
+                    string modDirPath = Path.Combine(basePath, modDirName);
+                    
+                    if (!Directory.Exists(modDirPath))
+                    {
+                        ShowMessage("Error", $"Directory {modDirPath} not found, make sure to create the necessary folders by pressing the 'Create Folders' button");
+                        return;
+                    }
+
+                    string[] modIniFiles =  Directory.GetFiles(modDirPath, "*.ini", SearchOption.AllDirectories);
+                    foreach (string modIniFile in modIniFiles)
+                    {
+                        string[] modIniLines = File.ReadAllLines(modIniFile);
+
+                        if (!modIniLines.Any(modIniLine => modIniLine.Contains(
+                                $"namespace = {iniRelativePath.Replace("/", "\\")}",
+                                StringComparison.OrdinalIgnoreCase))) continue;
+
+                        namespaceFound = true;
+                        iniPath = modIniFile;
+                        break;
+                    }
+                }
+
+                if (!namespaceFound)
+                {
+                    notFoundIniPaths.Add($"File or namespace not found: {iniPath}");
+                    continue;
+                }
             }
+            
+            Regex regexLine = new($@"^\s*global\s+persist\s+\${Regex.Escape(variable)}\b", RegexOptions.IgnoreCase);
             
             string[] iniLines = File.ReadAllLines(iniPath);
             List<string> newLines = [];
@@ -330,25 +344,31 @@ public partial class MainWindowViewModel : ViewModelBase
             File.WriteAllLines(iniPath, newLines);
         }
         
-        if (notFoundIniPaths.Count > 0) ShowMessage("Archivos no encontrados", string.Join("\n", notFoundIniPaths));
-        if (notFoundVariables.Count > 0) ShowMessage("Variables no encontradas", string.Join("\n", notFoundVariables));
+        if (notFoundIniPaths.Count > 0) ShowMessage("Warning", string.Join("\n\n", notFoundIniPaths));
+        if (notFoundVariables.Count > 0) ShowMessage("Warning", string.Join("\n\n", notFoundVariables));
         ShowMessage("Success", "Toggles updated!");
     }
     
-    private static string? ResolveActualPath(string basePath, string lowerCasePath)
+    private static string ResolveActualPath(string basePath, string relativePath)
     {
-        string[] parts = lowerCasePath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        string[] parts = relativePath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         string currentPath = basePath;
 
         foreach (string part in parts)
         {
-            if (!Directory.Exists(currentPath)) return null;
-
+            if (!Directory.Exists(currentPath) && !File.Exists(currentPath))
+            {
+                return relativePath;
+            }
+            
             string? match = Directory
                 .EnumerateFileSystemEntries(currentPath)
                 .FirstOrDefault(entry => string.Equals(Path.GetFileName(entry), part, StringComparison.OrdinalIgnoreCase));
 
-            if (match == null) return null;
+            if (match == null)
+            {
+                return relativePath;
+            }
 
             currentPath = match;
         }

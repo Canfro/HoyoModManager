@@ -6,16 +6,16 @@
         x:Class="HoyoModManager.Views.MessageBox"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
-        MaxWidth="450"
-        MaxHeight="300"
+        MaxWidth="800"
+        MaxHeight="400"
         SizeToContent="WidthAndHeight">
     
     <StackPanel Margin="16" Spacing="12">
-        <ScrollViewer MaxHeight="200"
+        <ScrollViewer MaxHeight="400"
                       VerticalScrollBarVisibility="Auto">
             <TextBlock Name="Message"
                        TextWrapping="Wrap"
-                       MaxWidth="420"/>
+                       MaxWidth="800"/>
         </ScrollViewer>
     </StackPanel>
 </Window>
