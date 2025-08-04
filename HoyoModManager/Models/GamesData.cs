@@ -15,7 +15,7 @@ public static class GamesData
         "Aether", "Albedo", "Alhaitham", "Aloy", "Amber", "Arataki Itto", "Arlecchino", "Baizhu", "Barbara", "Beidou", "Bennet", 
         "Candace", "Charlotte", "Chasca", "Chevreuse", "Chiori", "Chongyun", "Citlali", "Clorinde", "Collei", "Cyno", "Dahlia", 
         "Dehya", "Diluc", "Diona", "Dori", "Emilie", "Escoffier", "Eula", "Faruzan", "Fischl", "Freminet", "Furina", "Gaming", 
-        "Ganyu", "Gorou", "Hu Tao", "Iansan", "Ifa", "Jean", "Kachina", "Kaedehara Kazuha", "Kaeya", "Kamisato Ayaka", 
+        "Ganyu", "Gorou", "Hu Tao", "Iansan", "Ifa", "Ineffa", "Jean", "Kachina", "Kaedehara Kazuha", "Kaeya", "Kamisato Ayaka", 
         "Kamisato Ayato", "Kaveh", "Keqing", "Kinich", "Kirara", "Klee", "Kujou Sara", "Kuki Shinobu", "Lan Yan", "Layla", "Lisa", 
         "Lumine", "Lynette", "Lyney", "Mavuika", "Mika", "Mona", "Mualani", "Nahida", "Navia", "Neuvillette", "Nilou", "Ningguang", 
         "Noelle", "Ororon", "Qiqi", "Raiden Shogun", "Razor", "Rosaria", "Sangonomiya Kokomi", "Sayu", "Sethos", "Shenhe", 
@@ -41,7 +41,8 @@ public static class GamesData
     [
         "Anby", "Anby Soldier 0", "Anton", "Astra Yao", "Ben", "Billy", "Burnice", "Caesar", "Corin", "Ellen", "Evelyn", "Grace", 
         "Harumasa", "Hugo", "Jane Doe", "Ju Fufu", "Koleda", "Lighter", "Lucy", "Lycaon", "Miyabi", "Nicole", "Nekomata", "Pan Yinhu",
-        "Piper", "Pulchra", "Qingyi", "Rina", "Seth", "Soldier 11", "Soukaku", "Trigger", "Vivian", "Yanagi", "Yixuan", "Zhu Yuan",
+        "Piper", "Pulchra", "Qingyi", "Rina", "Seth", "Soldier 11", "Soukaku", "Trigger", "Ukinami Yuzuha", "Vivian", "Yanagi",
+        "Yixuan", "Zhu Yuan",
         "Other mods",
     ];
 }
