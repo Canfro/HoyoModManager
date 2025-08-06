@@ -39,10 +39,10 @@ public static class GamesData
     
     public static ObservableCollection<string> ZenlessNames { get; } =
     [
-        "Anby", "Anby Soldier 0", "Anton", "Astra Yao", "Ben", "Billy", "Burnice", "Caesar", "Corin", "Ellen", "Evelyn", "Grace", 
-        "Harumasa", "Hugo", "Jane Doe", "Ju Fufu", "Koleda", "Lighter", "Lucy", "Lycaon", "Miyabi", "Nicole", "Nekomata", "Pan Yinhu",
-        "Piper", "Pulchra", "Qingyi", "Rina", "Seth", "Soldier 11", "Soukaku", "Trigger", "Ukinami Yuzuha", "Vivian", "Yanagi",
-        "Yixuan", "Zhu Yuan",
+        "Anby", "Anby Soldier 0", "Anton", "Astra Yao", "Belle", "Ben", "Billy", "Burnice", "Caesar", "Corin", "Ellen", "Evelyn", 
+        "Grace", "Harumasa", "Hugo", "Jane Doe", "Ju Fufu", "Koleda", "Lighter", "Lucy", "Lycaon", "Miyabi", "Nicole", "Nekomata", 
+        "Pan Yinhu", "Piper", "Pulchra", "Qingyi", "Rina", "Seth", "Soldier 11", "Soukaku", "Trigger", "Ukinami Yuzuha", "Vivian", 
+        "Wise", "Yanagi", "Yixuan", "Zhu Yuan",
         "Other mods",
     ];
 }
