@@ -28,21 +28,21 @@ public static class GamesData
     public static ObservableCollection<string> StarRailNames { get; } =
     [
         "Acheron", "Aglaea", "Anaxa", "Archer", "Arlan", "Argenti", "Asta", "Aventurine", "Bailu", "Black Swan", "Blade", "Boothill", 
-        "Bronya", "Caelus", "Castorice", "Cipher", "Clara", "Dan Heng", "Dan Heng - Imbibitor Lunae", "Dr. Ratio", "Feixiao", 
-        "Firefly", "Fu Xuan", "Fugue", "Gallagher", "Gepard", "Guinaifen", "Hanya", "Herta", "Himeko", "Hook", "Huohuo", "Hyacine", 
-        "Jade", "Jiaoqiu", "Jing Yuan", "Jingliu", "Kafka", "Lingsha", "Luocha", "Luka", "Lynx", "March 7th", "March 7th (hunt)", 
-        "Misha", "Moze", "Mydei", "Natasha", "Pela", "Phainon", "Qingque", "Rappa", "Robin", "Ruan Mei", "Saber", "Sampo", "Seele", 
-        "Serval", "Silver Wolf", "Sparkle", "Stelle", "Sunday", "Sushang", "The Herta", "Tingyun", "Topaz and Numby", "Tribbie", 
-        "Welt", "Xueyi", "Yanqing", "Yukong", "Yunli",
+        "Bronya", "Caelus", "Castorice", "Cerydra", "Cipher", "Clara", "Dan Heng", "Dan Heng - Imbibitor Lunae", "Dr. Ratio", 
+        "Feixiao", "Firefly", "Fu Xuan", "Fugue", "Gallagher", "Gepard", "Guinaifen", "Hanya", "Herta", "Himeko", "Hook", "Huohuo", 
+        "Hyacine", "Hysilens", "Jade", "Jiaoqiu", "Jing Yuan", "Jingliu", "Kafka", "Lingsha", "Luocha", "Luka", "Lynx", "March 7th", 
+        "March 7th (hunt)", "Misha", "Moze", "Mydei", "Natasha", "Pela", "Phainon", "Qingque", "Rappa", "Robin", "Ruan Mei", "Saber", 
+        "Sampo", "Seele", "Serval", "Silver Wolf", "Sparkle", "Stelle", "Sunday", "Sushang", "The Herta", "Tingyun", 
+        "Topaz and Numby", "Tribbie", "Welt", "Xueyi", "Yanqing", "Yukong", "Yunli",
         "Other mods",
     ];
     
     public static ObservableCollection<string> ZenlessNames { get; } =
     [
-        "Anby", "Anby Soldier 0", "Anton", "Astra Yao", "Belle", "Ben", "Billy", "Burnice", "Caesar", "Corin", "Ellen", "Evelyn", 
-        "Grace", "Harumasa", "Hugo", "Jane Doe", "Ju Fufu", "Koleda", "Lighter", "Lucy", "Lycaon", "Miyabi", "Nicole", "Nekomata", 
-        "Pan Yinhu", "Piper", "Pulchra", "Qingyi", "Rina", "Seth", "Soldier 11", "Soukaku", "Trigger", "Ukinami Yuzuha", "Vivian", 
-        "Wise", "Yanagi", "Yixuan", "Zhu Yuan",
+        "Alice", "Anby", "Anby Soldier 0", "Anton", "Astra Yao", "Belle", "Ben", "Billy", "Burnice", "Caesar", "Corin", "Ellen", 
+        "Evelyn", "Grace", "Harumasa", "Hugo", "Jane Doe", "Ju Fufu", "Koleda", "Lighter", "Lucy", "Lycaon", "Miyabi", "Nicole", 
+        "Nekomata", "Pan Yinhu", "Piper", "Pulchra", "Qingyi", "Rina", "Seth", "Soldier 11", "Soukaku", "Trigger", "Ukinami Yuzuha", 
+        "Vivian", "Wise", "Yanagi", "Yixuan", "Zhu Yuan",
         "Other mods",
     ];
 }
